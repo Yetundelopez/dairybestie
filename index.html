@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>My Personal Diary — Private & Mindful Journaling</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-layout">
+    <!-- Top Editorial Navigation & Brand -->
+    <header class="app-header">
+      <div class="header-inner">
+        <div class="brand">
+          <div class="brand-emblem" aria-hidden="true">📖</div>
+          <div class="brand-text">
+            <h1 class="brand-title">Personal Diary</h1>
+            <p class="brand-date" id="currentDateDisplay">Loading today's date...</p>
+          </div>
+        </div>
+
+        <!-- Live Metrics / Stats Summary -->
+        <div class="header-stats">
+          <div class="stat-pill" title="Total entries written in your diary">
+            <span class="stat-icon" aria-hidden="true">📝</span>
+            <div class="stat-info">
+              <span class="stat-value" id="totalEntriesCount">0</span>
+              <span class="stat-label">Entries</span>
+            </div>
+          </div>
+          <div class="stat-pill" title="Total words captured in your thoughts">
+            <span class="stat-icon" aria-hidden="true">✍️</span>
+            <div class="stat-info">
+              <span class="stat-value" id="totalWordsCount">0</span>
+              <span class="stat-label">Words</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="app-main">
+      <!-- Journal Composition Card -->
+      <section class="journal-composer card" id="composerCard" aria-labelledby="composerHeading">
+        <div class="composer-header">
+          <div class="composer-title-wrap">
+            <span class="composer-icon" id="composerIcon" aria-hidden="true">✨</span>
+            <h2 id="composerHeading">Write in Your Diary</h2>
+          </div>
+          <span id="editingBadge" class="editing-badge" hidden style="display: none;">
+            ✏️ Editing entry
+          </span>
+        </div>
+
+        <form id="entryForm" novalidate autocomplete="off">
+          <input type="hidden" id="entryId" value="">
+
+          <!-- Row 1: Date & Mood Selector -->
+          <div class="composer-row">
+            <div class="field-group date-field">
+              <label for="entryDate">
+                <span>Date</span>
+                <button type="button" id="setTodayBtn" class="link-btn" title="Set to today's date">Today</button>
+              </label>
+              <div class="date-input-wrap">
+                <input type="date" id="entryDate" required>
+              </div>
+            </div>
+
+            <div class="field-group mood-field">
+              <label id="moodLabel">How are you feeling?</label>
+              <div class="mood-selector" role="radiogroup" aria-labelledby="moodLabel">
+                <label class="mood-option" title="Joyful">
+                  <input type="radio" name="entryMood" value="😊" checked>
+                  <span class="mood-chip">😊 Joyful</span>
+                </label>
+                <label class="mood-option" title="Peaceful">
+                  <input type="radio" name="entryMood" value="😌">
+                  <span class="mood-chip">😌 Calm</span>
+                </label>
+                <label class="mood-option" title="Inspired">
+                  <input type="radio" name="entryMood" value="💡">
+                  <span class="mood-chip">💡 Inspired</span>
+                </label>
+                <label class="mood-option" title="Cozy">
+                  <input type="radio" name="entryMood" value="☕">
+                  <span class="mood-chip">☕ Cozy</span>
+                </label>
+                <label class="mood-option" title="Reflective">
+                  <input type="radio" name="entryMood" value="💭">
+                  <span class="mood-chip">💭 Reflective</span>
+                </label>
+                <label class="mood-option" title="Tired / Low">
+                  <input type="radio" name="entryMood" value="🌧️">
+                  <span class="mood-chip">🌧️ Low</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Row 2: Title -->
+          <div class="field-group">
+            <label for="entryTitle">Entry Title</label>
+            <input 
+              type="text" 
+              id="entryTitle" 
+              placeholder="Give your memory a meaningful title..." 
+              maxlength="140" 
+              required
+            >
+          </div>
+
+          <!-- Row 3: Thoughts -->
+          <div class="field-group">
+            <div class="label-with-counter">
+              <label for="entryThoughts">Thoughts & Reflections</label>
+              <span class="word-counter" id="liveWordCount">0 words</span>
+            </div>
+            <textarea 
+              id="entryThoughts" 
+              rows="6" 
+              placeholder="Dear diary, today was... (press Cmd/Ctrl + Enter to quickly save)" 
+              required
+            ></textarea>
+          </div>
+
+          <!-- Composer Actions -->
+          <div class="composer-actions">
+            <div class="actions-left">
+              <button type="submit" id="saveBtn" class="btn btn-primary">
+                <span id="saveBtnIcon" aria-hidden="true">🌿</span>
+                <span id="saveBtnText">Save to Diary</span>
+              </button>
+              <button type="button" id="cancelEditBtn" class="btn btn-ghost" hidden style="display: none;">
+                Cancel Edit
+              </button>
+            </div>
+            <p class="shortcut-hint"><kbd>⌘/Ctrl</kbd> + <kbd>Enter</kbd> to save</p>
+          </div>
+        </form>
+      </section>
+
+      <!-- Entries Feed Section -->
+      <section class="entries-feed" aria-labelledby="feedTitle">
+        <!-- Interactive Toolbar: Search, Filter, Sort -->
+        <div class="feed-toolbar">
+          <div class="feed-header-line">
+            <h2 id="feedTitle" class="feed-title">Diary Entries</h2>
+            <div class="sort-control">
+              <label for="sortOrderSelect" class="sr-only">Sort entries</label>
+              <select id="sortOrderSelect" class="sort-select" title="Change entry sorting order">
+                <option value="newest">Newest first</option>
+                <option value="oldest">Oldest first</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Search Bar -->
+          <div class="search-bar">
+            <span class="search-glass" aria-hidden="true">🔍</span>
+            <input 
+              type="search" 
+              id="searchInput" 
+              placeholder="Search by keywords, title, thoughts, or date..." 
+              aria-label="Search diary entries"
+            >
+            <button 
+              type="button" 
+              id="clearSearchBtn" 
+              class="clear-btn" 
+              aria-label="Clear search text" 
+              hidden 
+              style="display: none;"
+            >✕</button>
+          </div>
+
+          <!-- Mood Filter Chips -->
+          <div class="mood-filter-scroll" id="moodFilterBar" role="region" aria-label="Filter entries by mood">
+            <button type="button" class="filter-chip active" data-mood="all">All Entries</button>
+            <button type="button" class="filter-chip" data-mood="😊">😊 Joyful</button>
+            <button type="button" class="filter-chip" data-mood="😌">😌 Calm</button>
+            <button type="button" class="filter-chip" data-mood="💡">💡 Inspired</button>
+            <button type="button" class="filter-chip" data-mood="☕">☕ Cozy</button>
+            <button type="button" class="filter-chip" data-mood="💭">💭 Reflective</button>
+            <button type="button" class="filter-chip" data-mood="🌧️">🌧️ Low</button>
+          </div>
+
+          <!-- Active Filter Results Summary -->
+          <div id="filterResultSummary" class="filter-summary" hidden style="display: none;">
+            <span id="filterSummaryText">Showing results</span>
+            <button type="button" id="resetFiltersBtn" class="reset-link">Reset filters</button>
+          </div>
+        </div>
+
+        <!-- Empty State Container -->
+        <div id="emptyState" class="empty-state card" hidden style="display: none;">
+          <div class="empty-state-art" id="emptyArt">📔</div>
+          <h3 id="emptyTitle" class="empty-title">Your diary is empty</h3>
+          <p id="emptyMessage" class="empty-text">
+            Every memorable journey starts with a single reflection. Take a moment to capture what happened today.
+          </p>
+          <button type="button" id="emptyCtaBtn" class="btn btn-secondary">
+            Write Your First Entry
+          </button>
+        </div>
+
+        <!-- The List of Diary Entries -->
+        <ul id="entriesList" class="entries-list" aria-live="polite"></ul>
+      </section>
+    </main>
+
+    <!-- Footer with Privacy Guarantee & Local Backup Tools -->
+    <footer class="app-footer">
+      <div class="footer-privacy">
+        <span class="lock-icon" aria-hidden="true">🔒</span>
+        <span>100% Private & Offline. All reflections stay solely inside this browser.</span>
+      </div>
+      <div class="footer-tools">
+        <button type="button" id="exportBackupBtn" class="tool-btn" title="Download a JSON backup of your diary">
+          📥 Backup Diary
+        </button>
+        <label class="tool-btn file-upload-label" title="Restore your diary from a backup file">
+          📤 Restore Backup
+          <input type="file" id="importBackupInput" accept=".json" hidden>
+        </label>
+      </div>
+    </footer>
+
+    <!-- Delete Confirmation Modal Dialog (<dialog>) -->
+    <dialog id="deleteConfirmDialog" class="journal-dialog" aria-labelledby="dialogTitle" aria-describedby="dialogDesc">
+      <div class="dialog-body">
+        <div class="dialog-badge" aria-hidden="true">🗑️</div>
+        <h3 id="dialogTitle" class="dialog-title">Delete this entry?</h3>
+        <p id="dialogDesc" class="dialog-text">
+          This reflection will be permanently erased from your diary. This action cannot be reversed.
+        </p>
+
+        <div class="dialog-entry-preview" id="deleteEntryPreview">
+          <span class="preview-title" id="deletePreviewTitle">Title</span>
+          <span class="preview-meta" id="deletePreviewMeta">Date</span>
+        </div>
+
+        <div class="dialog-buttons">
+          <button type="button" id="cancelDeleteBtn" class="btn btn-ghost">Keep Entry</button>
+          <button type="button" id="confirmDeleteBtn" class="btn btn-danger">Yes, Delete</button>
+        </div>
+      </div>
+    </dialog>
+
+    <!-- Toast Notification -->
+    <div id="toastNotification" class="toast" role="status" aria-live="polite"></div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
